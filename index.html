@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Plan - Lucía</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F4E5C">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Plan Lucía">
+
+<style>
+  :root {
+    --teal: #1F4E5C;
+    --teal-dark: #163840;
+    --teal-tint: #E7EEF0;
+    --green: #4F7A3D;
+    --cream: #F5EFDC;
+    --text: #1F2937;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --bg: #F4F6F7;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
+
+  header { padding: 32px; text-align: center; border-top: 4px solid var(--teal); background: #fff; border-bottom: 1px solid var(--border); }
+  header .icon { width: 64px; height: 64px; border-radius: 16px; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 12px; }
+  header h1 { margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; }
+  header p { margin: 6px 0 0; color: var(--muted); font-size: 0.95rem; }
+
+  main { flex: 1; padding: 32px; max-width: 720px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 18px; }
+
+  .card { background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.04); border: 1px solid var(--border); padding: 24px; display: flex; align-items: center; gap: 18px; text-decoration: none; color: var(--text); transition: transform .15s, box-shadow .15s; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+  .card .icon { width: 52px; height: 52px; border-radius: 12px; background: var(--teal-tint); color: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0; }
+  .card h2 { margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+  .card .arrow { margin-left: auto; color: var(--teal); font-size: 1.3rem; flex-shrink: 0; }
+
+  .install-tip { background: var(--teal-tint); border-radius: var(--radius); padding: 16px 18px; font-size: 0.85rem; color: var(--teal-dark); line-height: 1.6; }
+  .install-tip strong { display: block; margin-bottom: 4px; }
+
+  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="icon">💪</div>
+  <h1>Plan de Lucía</h1>
+  <p>Entrenamiento, nutrición, descanso y recuperación</p>
+</header>
+
+<main>
+  <a class="card" href="Plan de Entrenamiento - Lucía.html">
+    <div class="icon">🏋️</div>
+    <div>
+      <h2>Plan de Entrenamiento</h2>
+      <p>Mesociclos, microciclos y cardio</p>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a class="card" href="Plan de Nutricion y Descanso - Lucía.html">
+    <div class="icon">🥗</div>
+    <div>
+      <h2>Plan de Nutrición y Descanso</h2>
+      <p>Menú semanal, hidratación, descanso y recuperación</p>
+    </div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="install-tip">
+    <strong>📲 Instala esta app en tu pantalla de inicio</strong>
+    <span id="install-instrucciones">
+      En Android (Chrome): toca el menú ⋮ y elige "Instalar aplicación" o "Añadir a pantalla de inicio".<br>
+      En iPhone/iPad (Safari): toca el botón compartir
+      <svg style="display:inline;vertical-align:middle;width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M12 4l-4 4M12 4l4 4M4 14v4a2 2 0 002 2h12a2 2 0 002-2v-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      y elige "Añadir a pantalla de inicio". Así podrás abrirla sin conexión y guardar tu progreso normalmente.
+    </span>
+  </div>
+</main>
+
+<footer>Plan de Lucía · Funciona sin conexión una vez instalada</footer>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>

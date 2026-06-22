@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de Nutrición y Descanso - Lucía</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F4E5C">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Plan Lucía">
+<style>
+  :root {
+    --teal: #1F4E5C;
+    --teal-dark: #163840;
+    --teal-tint: #E7EEF0;
+    --green: #4F7A3D;
+    --cream: #F5EFDC;
+    --warm: #B5651D;
+    --text: #1F2937;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --bg: #F4F6F7;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+  header { padding: 22px 32px; background: #fff; border-bottom: 1px solid var(--border); border-top: 4px solid var(--teal); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  header .brand { display: flex; align-items: center; gap: 14px; }
+  header .brand .icon { width: 46px; height: 46px; border-radius: 12px; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+  header h1 { margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.01em; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 0.9rem; }
+  header .links { display: flex; gap: 14px; align-items: center; }
+  header a { color: var(--teal); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
+  header a:hover { text-decoration: underline; }
+
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .actions button, .actions label.btn { background: var(--teal); color: #fff; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background .15s; }
+  .actions button:hover, .actions label.btn:hover { background: var(--teal-dark); }
+
+  .tab-radio { position: absolute; opacity: 0; pointer-events: none; }
+  .tabs { display: flex; gap: 4px; padding: 10px 32px; background: #fff; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .tab-btn { background: none; border: none; padding: 10px 18px; cursor: pointer; font-size: 0.88rem; font-weight: 600; color: var(--muted); border-radius: 8px; white-space: nowrap; transition: all .15s; display: inline-block; }
+  .tab-btn:hover { background: var(--teal-tint); color: var(--teal); }
+
+  main { padding: 28px 32px 40px; max-width: 1200px; margin: 0 auto; }
+  .tab-content { display: none; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  #tab-resumen:checked ~ main #resumen,
+  #tab-menu:checked ~ main #menu,
+  #tab-hidratacion:checked ~ main #hidratacion,
+  #tab-descanso:checked ~ main #descanso,
+  #tab-recuperacion:checked ~ main #recuperacion { display: block; animation: fadeIn .2s ease; }
+
+  #tab-resumen:checked ~ nav label[for="tab-resumen"],
+  #tab-menu:checked ~ nav label[for="tab-menu"],
+  #tab-hidratacion:checked ~ nav label[for="tab-hidratacion"],
+  #tab-descanso:checked ~ nav label[for="tab-descanso"],
+  #tab-recuperacion:checked ~ nav label[for="tab-recuperacion"] { color: #fff; background: var(--teal); }
+
+  .card { background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.04); padding: 24px; margin-bottom: 18px; border: 1px solid var(--border); }
+  .resumen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .resumen-grid .item span { display: block; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; font-weight: 700; }
+  .resumen-grid .item.wide { grid-column: 1 / -1; background: var(--teal-tint); border-radius: 10px; padding: 14px 16px; }
+  .resumen-grid .item.wide span { color: var(--teal); }
+
+  .progress-bar { background: var(--border); border-radius: 999px; height: 14px; overflow: hidden; }
+  .progress-fill { background: var(--green); height: 100%; width: 0%; border-radius: 999px; transition: width .3s ease; }
+  .progress-text { margin: 10px 0 0; font-size: 0.85rem; color: var(--muted); }
+
+  .table-wrap { overflow-x: auto; background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 20px; border: 1px solid var(--border); }
+  table.simple { border-collapse: collapse; width: 100%; min-width: 700px; }
+  table.simple th, table.simple td { padding: 10px 14px; text-align: center; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+  table.simple th { background: var(--teal); color: #fff; font-weight: 600; text-transform: uppercase; font-size: 0.72rem; letter-spacing: .05em; }
+  table.simple td:first-child, table.simple th:first-child { text-align: left; }
+  table.simple tbody tr:nth-child(even) { background: #FAFBFC; }
+  table.simple tbody tr:hover { background: var(--teal-tint); }
+
+  .micro-table { margin-bottom: 24px; border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.06); border: 1px solid var(--border); }
+  .micro-table table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  .micro-title { background: var(--teal); color: #fff; font-weight: 700; font-size: 0.95rem; padding: 12px 16px; letter-spacing: .05em; text-transform: uppercase; }
+  .micro-title.descarga { background: var(--warm); }
+  .micro-table thead th { background: #fff; color: var(--text); font-weight: 700; padding: 10px 14px; border-bottom: 2px solid var(--border); font-size: 0.72rem; text-transform: uppercase; letter-spacing: .05em; text-align: center; }
+  .micro-table thead th:nth-child(2) { text-align: left; }
+  .micro-table tbody td { padding: 9px 14px; font-size: 0.85rem; color: #fff; text-align: center; border-bottom: 1px solid rgba(255,255,255,.12); }
+  .micro-table tbody tr.data-row td { background: var(--teal); }
+  .micro-table tbody tr.data-row:hover td { background: var(--teal-dark); }
+  .micro-table tbody tr.data-row td.peso-cell { background: var(--green); }
+  .micro-table tbody tr.data-row:hover td.peso-cell { background: #436b34; }
+  .micro-table tbody tr.data-row td.check-cell { background: var(--green); }
+  .micro-table tbody tr.data-row:hover td.check-cell { background: #436b34; }
+  .micro-table tbody td.day-cell { font-weight: 700; font-size: 1rem; vertical-align: middle; }
+  .micro-table tbody td.ex-cell { text-align: left; font-weight: 500; }
+  .micro-table tbody tr.day-sep td { background: var(--cream); border: none; padding: 4px; }
+
+  .sesion-check { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 0.72rem; font-weight: 400; text-transform: none; letter-spacing: normal; cursor: pointer; }
+  .sesion-check input { accent-color: var(--green); width: 14px; height: 14px; cursor: pointer; }
+
+  input.peso { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35); color: #fff; border-radius: 6px; padding: 5px 8px; width: 100px; text-align: center; font-family: inherit; font-size: 0.85rem; transition: background .15s; }
+  input.peso::placeholder { color: rgba(255,255,255,.6); }
+  input.peso:focus { outline: 2px solid #fff; background: rgba(255,255,255,.25); }
+
+  .check-cell input.sesion { accent-color: #fff; width: 18px; height: 18px; cursor: pointer; }
+
+  @media (max-width: 640px) {
+    table.simple { min-width: 0; }
+    table.simple thead { display: none; }
+    table.simple tbody tr { display: block; padding: 10px 14px; }
+    table.simple tbody td { display: block; text-align: left; border: none; padding: 3px 0; }
+    table.simple tbody td::before { content: attr(data-label) ": "; font-weight: 700; color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: .04em; display: block; margin-bottom: 1px; }
+    table.simple tbody td:first-child { font-weight: 700; font-size: 0.95rem; padding-bottom: 6px; }
+    table.simple tbody td:first-child::before { content: none; }
+  }
+
+  h2 { font-size: 1.05rem; margin: 0 0 14px; font-weight: 700; }
+  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<input type="radio" name="tabs" id="tab-resumen" class="tab-radio" checked>
+<input type="radio" name="tabs" id="tab-menu" class="tab-radio">
+<input type="radio" name="tabs" id="tab-hidratacion" class="tab-radio">
+<input type="radio" name="tabs" id="tab-descanso" class="tab-radio">
+<input type="radio" name="tabs" id="tab-recuperacion" class="tab-radio">
+
+<header>
+  <div class="brand">
+    <div class="icon">🥗</div>
+    <div>
+      <h1>Plan de Nutrición y Descanso</h1>
+      <p>Lucía · Recomposición corporal (~1.900 kcal/día) · 4 comidas/día</p>
+    </div>
+  </div>
+  <div class="actions">
+    <button onclick="exportarProgreso()">⬇️ Exportar progreso</button>
+    <label class="btn">⬆️ Importar progreso<input type="file" accept="application/json" onchange="importarProgreso(event)" hidden></label>
+    <a href="Plan de Entrenamiento - Lucía.html">🏋️ Ver plan de entrenamiento →</a>
+  </div>
+</header>
+
+<nav class="tabs">
+  <label class="tab-btn" for="tab-resumen">📊 Resumen Nutrición</label>
+  <label class="tab-btn" for="tab-menu">🍽️ Menú Semanal</label>
+  <label class="tab-btn" for="tab-hidratacion">Hidratación</label>
+  <label class="tab-btn" for="tab-descanso">Descanso</label>
+  <label class="tab-btn" for="tab-recuperacion">Recuperación</label>
+</nav>
+
+<main>
+  <section id="resumen" class="tab-content">
+    <div class="card">
+      <h2>Adherencia al plan nutricional</h2>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <p class="progress-text" id="progress-text">0 / 0 elementos marcados (0%)</p>
+    </div>
+    <div class="card resumen-grid">
+      <div class="item"><span>Para quién</span>Lucía</div>
+      <div class="item"><span>Objetivo nutricional</span>Recomposición corporal (déficit moderado)</div>
+      <div class="item"><span>Restricciones</span>Ninguna</div>
+      <div class="item"><span>Comidas al día</span>4</div>
+      <div class="item"><span>Datos antropométricos</span>1,74 m · 60 kg · 26 años</div>
+      <div class="item"><span>Calorías estimadas</span>~1.900 kcal/día</div>
+      <div class="item"><span>Macros orientativos</span>Proteína 120 g · Grasas 60 g · Carbohidratos 220 g</div>
+      <div class="item wide"><span>Cómo se ha calculado</span>Gasto basal estimado (Mifflin-St Jeor, mujer, 26 años, 60 kg, 174 cm) ≈ 1.397 kcal. Con un nivel de actividad moderado (4 sesiones de fuerza/semana, factor ×1,55) el gasto total estimado es ≈ 2.165 kcal/día. Para la recomposición corporal se aplica un déficit moderado (≈265 kcal, más suave que en una pérdida de grasa pura) para perder grasa minimizando la pérdida de masa muscular, dejando el objetivo en ≈ 1.900 kcal/día. Estas cifras son una <strong>estimación orientativa</strong>, no un cálculo clínico — ajústalas según cómo evolucione tu peso, tu fuerza y tu energía semana a semana.</div>
+      <div class="item wide"><span>Reparto de macros</span>Proteína alta, 2 g/kg (120 g ≈ 480 kcal) para proteger y favorecer el desarrollo de masa muscular estando en déficit · Grasas 1 g/kg (60 g ≈ 540 kcal) para la salud hormonal · Carbohidratos el resto (220 g ≈ 880 kcal) para sostener el rendimiento en tus 4 sesiones semanales de cuádriceps/glúteo y tren superior.</div>
+      <div class="item wide"><span>Si añades cardio</span>Tu plan de entrenamiento incluye una pestaña de Cardio con 1-2 sesiones opcionales/semana. Si las incorporas de forma habitual, tu gasto real subirá por encima de esta estimación — si notas que pierdes peso/grasa más rápido de lo esperado o te falta energía, sube 100-150 kcal (más carbohidratos) en lugar de mantener el mismo objetivo.</div>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--warm); background: #FFF8F0;">
+      <h2>💾 Para no perder tu progreso</h2>
+      <p style="margin:0; font-size:0.9rem;">Guarda este archivo en una carpeta fija de tu móvil u ordenador (por ejemplo "Documentos" o "Descargas") y ábrelo siempre desde ahí. Si lo abres directamente desde WhatsApp, Telegram o Drive cada vez, el dispositivo suele crear una copia temporal distinta en cada apertura, y el progreso guardado en la copia anterior no aparecerá. Usa "⬇️ Exportar progreso" de vez en cuando para tener una copia de seguridad, y "⬆️ Importar progreso" si cambias de archivo, dispositivo o navegador.</p>
+      <p id="aviso-guardado" style="display:none; margin:10px 0 0; font-size:0.9rem; font-weight:700; color: var(--warm);">⚠️ Tu navegador no permite guardar el progreso automáticamente en este archivo (algunos navegadores móviles bloquean esto en archivos locales). Antes de cerrar usa "⬇️ Exportar progreso" para guardar una copia, y al volver a abrir usa "⬆️ Importar progreso" para recuperarla.</p>
+    </div>
+  </section>
+
+  <section id="menu" class="tab-content">
+    <div class="micro-table">
+      <div class="micro-title">MENÚ SEMANAL</div>
+      <table>
+        <thead>
+          <tr><th>DÍA</th><th>COMIDA</th><th>OPCIÓN PRINCIPAL</th><th>ALTERNATIVA</th><th>HECHO</th></tr>
+        </thead>
+        <tbody>
+          <tr class="data-row">
+            <td class="day-cell" rowspan="4">Lunes (Día 1 - cuádriceps)</td>
+            <td class="ex-cell">Desayuno</td>
+            <td>Yogur griego con avena, plátano y canela</td>
+            <td>Tostadas integrales con aguacate y huevo</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-lunes-desayuno-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Comida</td>
+            <td>Pechuga de pollo a la plancha con arroz y verduras</td>
+            <td>Pasta integral con atún, tomate y aceitunas</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-lunes-comida-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Merienda</td>
+            <td>Batido de proteína con fruta</td>
+            <td>Queso fresco con nueces y miel</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-lunes-merienda-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Cena</td>
+            <td>Salmón al horno con boniato y ensalada</td>
+            <td>Tortilla de claras con champiñones y pan integral</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-lunes-cena-hecho"></td>
+          </tr>
+          <tr class="day-sep"><td colspan="5"></td></tr>
+
+          <tr class="data-row">
+            <td class="day-cell" rowspan="4">Martes (Día 2 - empuje)</td>
+            <td class="ex-cell">Desayuno</td>
+            <td>Tostadas con queso fresco, jamón y tomate</td>
+            <td>Porridge de avena con frutos rojos</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-martes-desayuno-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Comida</td>
+            <td>Lomo de cerdo a la plancha con patata y judías verdes</td>
+            <td>Garbanzos guisados con espinacas y arroz</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-martes-comida-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Merienda</td>
+            <td>Fruta + puñado de almendras</td>
+            <td>Yogur griego con miel</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-martes-merienda-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Cena</td>
+            <td>Merluza al vapor con puré de calabaza y ensalada</td>
+            <td>Revuelto de huevos con gambas y pimientos</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-martes-cena-hecho"></td>
+          </tr>
+          <tr class="day-sep"><td colspan="5"></td></tr>
+
+          <tr class="data-row">
+            <td class="day-cell" rowspan="4">Miércoles (Día 3 - glúteo/femoral)</td>
+            <td class="ex-cell">Desayuno</td>
+            <td>Tortilla de 2 huevos con espinacas y pan integral</td>
+            <td>Skyr con granola y plátano</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-miercoles-desayuno-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Comida</td>
+            <td>Arroz con atún, maíz y pimiento</td>
+            <td>Pasta integral con pollo y tomate</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-miercoles-comida-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Merienda</td>
+            <td>Batido de proteína con avena</td>
+            <td>Queso fresco con fruta</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-miercoles-merienda-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Cena</td>
+            <td>Pechuga de pollo al horno con verduras asadas</td>
+            <td>Tortilla de patata ligera con ensalada</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-miercoles-cena-hecho"></td>
+          </tr>
+          <tr class="day-sep"><td colspan="5"></td></tr>
+
+          <tr class="data-row">
+            <td class="day-cell" rowspan="4">Jueves (Día 4 - tracción)</td>
+            <td class="ex-cell">Desayuno</td>
+            <td>Porridge de avena con manzana y canela</td>
+            <td>Tostadas con pavo y tomate</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-jueves-desayuno-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Comida</td>
+            <td>Ternera salteada con arroz integral y verduras</td>
+            <td>Lentejas guisadas con arroz y verduras</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-jueves-comida-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Merienda</td>
+            <td>Yogur griego con frutos rojos</td>
+            <td>Batido de proteína con plátano</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-jueves-merienda-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Cena</td>
+            <td>Salmón a la plancha con quinoa y espárragos</td>
+            <td>Wrap integral de pollo con verduras</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-jueves-cena-hecho"></td>
+          </tr>
+          <tr class="day-sep"><td colspan="5"></td></tr>
+
+          <tr class="data-row">
+            <td class="day-cell" rowspan="4">Viernes (descanso / cardio opcional)</td>
+            <td class="ex-cell">Desayuno</td>
+            <td>Tostadas integrales con aguacate y huevo poché</td>
+            <td>Bowl de yogur con granola y fruta</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-viernes-desayuno-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Comida</td>
+            <td>Pollo al curry con arroz basmati</td>
+            <td>Merluza con patata cocida y ensalada</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-viernes-comida-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Merienda</td>
+            <td>Fruta + yogur natural</td>
+            <td>Batido de proteína</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-viernes-merienda-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Cena</td>
+            <td>Tortilla francesa con tostadas y tomate</td>
+            <td>Ensalada completa con atún, huevo y maíz</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-viernes-cena-hecho"></td>
+          </tr>
+          <tr class="day-sep"><td colspan="5"></td></tr>
+
+          <tr class="data-row">
+            <td class="day-cell" rowspan="4">Sábado (descanso / cardio opcional)</td>
+            <td class="ex-cell">Desayuno</td>
+            <td>Bowl de yogur con granola, fruta y nueces</td>
+            <td>Tostadas con queso fresco y tomate</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-sabado-desayuno-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Comida</td>
+            <td>Arroz con pollo y verduras salteadas</td>
+            <td>Paella de marisco o pollo (ración moderada) con ensalada</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-sabado-comida-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Merienda</td>
+            <td>Fruta + frutos secos</td>
+            <td>Batido de proteína</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-sabado-merienda-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Cena</td>
+            <td>Hamburguesa casera de ternera magra con pan integral y ensalada</td>
+            <td>Pasta integral con pesto ligero y pollo</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-sabado-cena-hecho"></td>
+          </tr>
+          <tr class="day-sep"><td colspan="5"></td></tr>
+
+          <tr class="data-row">
+            <td class="day-cell" rowspan="4">Domingo (descanso total)</td>
+            <td class="ex-cell">Desayuno</td>
+            <td>Tortilla francesa con tostadas y tomate</td>
+            <td>Porridge con frutos rojos</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-domingo-desayuno-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Comida</td>
+            <td>Guiso de legumbres con verduras</td>
+            <td>Arroz con pollo asado y ensalada</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-domingo-comida-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Merienda</td>
+            <td>Batido de proteína con fruta</td>
+            <td>Yogur con miel y nueces</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-domingo-merienda-hecho"></td>
+          </tr>
+          <tr class="data-row">
+            <td class="ex-cell">Cena</td>
+            <td>Crema de verduras + tortilla a la francesa</td>
+            <td>Ensalada completa con atún y huevo</td>
+            <td class="check-cell"><input class="sesion" type="checkbox" data-key="nutricion-domingo-cena-hecho"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="hidratacion" class="tab-content">
+    <div class="card">
+      <h2>Pauta de hidratación</h2>
+      <p>Con 60 kg de peso, la referencia general es de unos <strong>2-2,2 litros al día</strong> en días de descanso, y entre <strong>2,5-2,8 litros</strong> los días de entrenamiento (lunes a jueves), para compensar lo que se pierde con el sudor.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="simple">
+        <thead><tr><th>Momento</th><th>Recomendación</th></tr></thead>
+        <tbody>
+          <tr><td>Al despertar</td><td>Un vaso de agua (~250 ml) antes del desayuno</td></tr>
+          <tr><td>Durante el día</td><td>Llevar siempre una botella de agua a mano y beber pequeños sorbos de forma regular, sin esperar a tener sed</td></tr>
+          <tr><td>Antes del entreno</td><td>~400-500 ml en la hora previa a la sesión</td></tr>
+          <tr><td>Durante el entreno</td><td>Pequeños sorbos cada 15-20 min</td></tr>
+          <tr><td>Después del entreno</td><td>Reponer con ~500 ml adicionales junto a la comida posterior</td></tr>
+          <tr><td>Café/infusiones</td><td>No sustituyen al agua; cuentan poco para la hidratación total, especialmente si hay varias tazas al día</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="micro-table">
+      <div class="micro-title">CONTROL SEMANAL DE HIDRATACIÓN</div>
+      <table>
+        <thead><tr><th>Día</th><th>Objetivo</th><th>Cumplido</th></tr></thead>
+        <tbody>
+          <tr class="data-row"><td class="ex-cell">Lunes</td><td>~2,5-2,8 L (entreno)</td><td class="check-cell"><input class="sesion" type="checkbox" data-key="hidratacion-lunes"></td></tr>
+          <tr class="data-row"><td class="ex-cell">Martes</td><td>~2,5-2,8 L (entreno)</td><td class="check-cell"><input class="sesion" type="checkbox" data-key="hidratacion-martes"></td></tr>
+          <tr class="data-row"><td class="ex-cell">Miércoles</td><td>~2,5-2,8 L (entreno)</td><td class="check-cell"><input class="sesion" type="checkbox" data-key="hidratacion-miercoles"></td></tr>
+          <tr class="data-row"><td class="ex-cell">Jueves</td><td>~2,5-2,8 L (entreno)</td><td class="check-cell"><input class="sesion" type="checkbox" data-key="hidratacion-jueves"></td></tr>
+          <tr class="data-row"><td class="ex-cell">Viernes</td><td>~2-2,2 L (descanso/cardio)</td><td class="check-cell"><input class="sesion" type="checkbox" data-key="hidratacion-viernes"></td></tr>
+          <tr class="data-row"><td class="ex-cell">Sábado</td><td>~2-2,2 L (descanso/cardio)</td><td class="check-cell"><input class="sesion" type="checkbox" data-key="hidratacion-sabado"></td></tr>
+          <tr class="data-row"><td class="ex-cell">Domingo</td><td>~2-2,2 L (descanso)</td><td class="check-cell"><input class="sesion" type="checkbox" data-key="hidratacion-domingo"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="descanso" class="tab-content">
+    <div class="card">
+      <h2>Objetivo de sueño</h2>
+      <p>Indicas que tu descanso actual es relativamente bueno — el objetivo es mantenerlo así y protegerlo especialmente en los días de entreno, ya que es uno de los factores que más influye en la recuperación muscular y en sostener el rendimiento estando en déficit calórico.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="simple">
+        <thead><tr><th>Recomendación</th><th>Detalle</th></tr></thead>
+        <tbody>
+          <tr><td>Horario regular</td><td>Acostarse y levantarse a horas similares todos los días (también fines de semana), con una variación máxima de ~1h</td></tr>
+          <tr><td>Pantallas</td><td>Reducir el uso de móvil/tablet/ordenador 30-60 min antes de dormir; si no es posible, activar el modo nocturno/filtro de luz azul</td></tr>
+          <tr><td>Cafeína</td><td>Evitar café, té con cafeína o bebidas energéticas a partir de media tarde (al menos 8h antes de dormir)</td></tr>
+          <tr><td>Luz y temperatura</td><td>Habitación oscura, ventilada y fresca (~18-20°C); usar antifaz o cortinas opacas si hay luz exterior</td></tr>
+          <tr><td>Cena</td><td>Evitar cenas muy copiosas o tardías; dejar 1,5-2h entre la cena y acostarse</td></tr>
+          <tr><td>Rutina previa</td><td>Crear una rutina relajante antes de dormir (ducha, lectura, estiramientos suaves, respiración) para señalizar al cuerpo que toca desconectar</td></tr>
+          <tr><td>Noches a priorizar</td><td>Cuida especialmente el descanso tras el Día 1 (cuádriceps) y el Día 3 (glúteo/femoral): son las sesiones con más fatiga acumulada de la semana</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="recuperacion" class="tab-content">
+    <div class="card">
+      <h2>Distribución de la semana</h2>
+      <p>4 días de entrenamiento (lunes a jueves) + 3 días sin gimnasio. De esos 3, puedes meter 1-2 de <strong>cardio ligero</strong> (viernes/sábado, ver pestaña Cardio del plan de entrenamiento) y dejar al menos 1 de <strong>descanso total</strong> (domingo).</p>
+    </div>
+    <div class="table-wrap">
+      <table class="simple">
+        <thead><tr><th>Técnica</th><th>Cuándo y cómo aplicarla</th></tr></thead>
+        <tbody>
+          <tr><td>Estiramientos suaves</td><td>5-10 min al terminar cada sesión, centrados en los grupos trabajados ese día (cuádriceps/glúteo los días 1 y 3, tren superior los días 2 y 4)</td></tr>
+          <tr><td>Foam roller / automasaje</td><td>10-15 min en piernas y glúteos los días siguientes al Día 1 y Día 3, para reducir las agujetas y mejorar la movilidad</td></tr>
+          <tr><td>Movilidad ligera</td><td>Rutina corta de movilidad de cadera y hombro 2-3 veces/semana, ideal en los días de descanso</td></tr>
+          <tr><td>Paseos / cardio suave</td><td>20-30 min de paseo a ritmo cómodo en días de descanso, ayuda a la recuperación sin añadir fatiga</td></tr>
+          <tr><td>Contraste frío/calor</td><td>Opcional: ducha con agua fría al final tras las sesiones de pierna, o calor/manta térmica si hay rigidez muscular</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Señales de sobreentrenamiento a vigilar</h2>
+      <p>Al estar en déficit calórico el margen de recuperación es menor que en mantenimiento. Si aparecen varias de estas señales de forma sostenida durante 1-2 semanas, conviene reducir volumen/intensidad, añadir un día extra de descanso o subir algo las calorías unos días:</p>
+    </div>
+    <div class="table-wrap">
+      <table class="simple">
+        <thead><tr><th>Señal</th><th>Qué indica</th></tr></thead>
+        <tbody>
+          <tr><td>Fatiga persistente</td><td>Cansancio que no mejora aunque duermas bien varios días seguidos</td></tr>
+          <tr><td>Bajo rendimiento</td><td>Pesos o repeticiones que bajan respecto a semanas anteriores sin motivo aparente</td></tr>
+          <tr><td>Dolor articular o molestias que no remiten</td><td>Distinto de las agujetas normales: dolor localizado que persiste o empeora con el entreno (ej. la molestia de espalda que ya apuntaste en el peso muerto rumano — si reaparece, valora bajar carga o cambiar el ejercicio)</td></tr>
+          <tr><td>Mal sueño</td><td>Dificultad para dormir o sueño poco reparador a pesar de entrenar duro</td></tr>
+          <tr><td>Hambre excesiva o caída brusca de energía</td><td>Puede indicar que el déficit actual es demasiado agresivo para tu nivel de actividad — valora subir las calorías unos días</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>Generado por tu plan de nutrición y descanso · El progreso se guarda automáticamente en este navegador</footer>
+
+<script>
+  const STORAGE_KEY = "progreso_nutricion_lucia";
+
+  let storageDisponible = true;
+  try {
+    localStorage.setItem('__test__', '1');
+    localStorage.removeItem('__test__');
+  } catch (e) {
+    storageDisponible = false;
+  }
+  let memoria = {};
+
+  function leerAlmacen() {
+    if (!storageDisponible) return memoria;
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    } catch (e) {
+      storageDisponible = false;
+      return memoria;
+    }
+  }
+
+  function escribirAlmacen(data) {
+    memoria = data;
+    if (!storageDisponible) {
+      mostrarAvisoGuardado();
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      storageDisponible = false;
+      mostrarAvisoGuardado();
+    }
+  }
+
+  function mostrarAvisoGuardado() {
+    const aviso = document.getElementById('aviso-guardado');
+    if (aviso) aviso.style.display = 'block';
+  }
+
+  function cargarProgreso() {
+    const data = leerAlmacen();
+    document.querySelectorAll('.peso[data-key]').forEach(el => {
+      if (data[el.dataset.key] !== undefined) el.value = data[el.dataset.key];
+    });
+    document.querySelectorAll('.sesion[data-key]').forEach(el => {
+      if (data[el.dataset.key] !== undefined) el.checked = data[el.dataset.key];
+    });
+    actualizarProgreso();
+    if (!storageDisponible) mostrarAvisoGuardado();
+  }
+
+  function guardarCampo(el) {
+    const data = leerAlmacen();
+    data[el.dataset.key] = el.type === "checkbox" ? el.checked : el.value;
+    escribirAlmacen(data);
+  }
+
+  function actualizarProgreso() {
+    const checks = document.querySelectorAll('.sesion[data-key]');
+    const total = checks.length;
+    const completadas = Array.from(checks).filter(el => el.checked).length;
+    const pct = total ? Math.round((completadas / total) * 100) : 0;
+    const fill = document.getElementById('progress-fill');
+    const text = document.getElementById('progress-text');
+    if (fill) fill.style.width = pct + '%';
+    if (text) text.textContent = `${completadas} / ${total} elementos marcados (${pct}%)`;
+  }
+
+  document.querySelectorAll('.peso[data-key]').forEach(el => {
+    el.addEventListener('input', () => guardarCampo(el));
+  });
+  document.querySelectorAll('.sesion[data-key]').forEach(el => {
+    el.addEventListener('change', () => { guardarCampo(el); actualizarProgreso(); });
+  });
+  cargarProgreso();
+
+  // En móvil, table.simple pasa de tabla horizontal a tarjetas verticales
+  // (ver @media max-width:640px). Esto pone en cada celda la cabecera de su
+  // columna como atributo, para poder mostrarla como etiqueta sin tener que
+  // tocar el HTML de cada tabla.
+  document.querySelectorAll('table.simple').forEach(table => {
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      Array.from(tr.children).forEach((td, i) => {
+        if (headers[i]) td.setAttribute('data-label', headers[i]);
+      });
+    });
+  });
+
+  function exportarProgreso() {
+    const data = JSON.stringify(leerAlmacen());
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "progreso_nutricion_lucia.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importarProgreso(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        escribirAlmacen(data);
+        cargarProgreso();
+        alert("Progreso importado correctamente.");
+      } catch (err) {
+        alert("El archivo no es válido.");
+      }
+    };
+    reader.readAsText(file);
+  }
+</script>
+
+</body>
+</html>

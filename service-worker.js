@@ -2,7 +2,7 @@
 // Sube CACHE_NAME (ej. "plan-lucia-v2") cada vez que cambies
 // el contenido de las páginas para forzar a los dispositivos a descargar
 // la versión nueva.
-const CACHE_NAME = "plan-lucia-v3";
+const CACHE_NAME = "plan-lucia-v4";
 
 const ARCHIVOS_CACHE = [
   "./",

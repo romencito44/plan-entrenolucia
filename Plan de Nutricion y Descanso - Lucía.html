@@ -116,6 +116,17 @@
     table.simple tbody td::before { content: attr(data-label) ": "; font-weight: 700; color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: .04em; display: block; margin-bottom: 1px; }
     table.simple tbody td:first-child { font-weight: 700; font-size: 0.95rem; padding-bottom: 6px; }
     table.simple tbody td:first-child::before { content: none; }
+
+    .micro-table table { min-width: 0; }
+    .micro-table thead { display: none; }
+    .micro-table tbody tr.data-row { display: block; padding: 12px 14px 14px; }
+    .micro-table tbody tr.data-row td { display: block; text-align: left; border: none; padding: 2px 0; }
+    .micro-table tbody td.day-cell { padding-bottom: 8px; }
+    .micro-table tbody td.ex-cell { padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px dashed rgba(255,255,255,.25); }
+    .micro-table tbody td:not(.day-cell):not(.ex-cell)::before { content: attr(data-label) ": "; opacity: .65; font-size: 0.85rem; }
+    .micro-table tbody td.peso-cell { padding-top: 8px; }
+    .micro-table tbody td.peso-cell input.peso { width: 100%; }
+    .micro-table tbody tr.day-sep { display: block; }
   }
 
   h2 { font-size: 1.05rem; margin: 0 0 14px; font-weight: 700; }
@@ -551,15 +562,19 @@
   });
   cargarProgreso();
 
-  // En móvil, table.simple pasa de tabla horizontal a tarjetas verticales
-  // (ver @media max-width:640px). Esto pone en cada celda la cabecera de su
-  // columna como atributo, para poder mostrarla como etiqueta sin tener que
-  // tocar el HTML de cada tabla.
-  document.querySelectorAll('table.simple').forEach(table => {
+  // En móvil, table.simple y .micro-table pasan de tabla horizontal a
+  // tarjetas verticales (ver @media max-width:640px). Esto pone en cada
+  // celda la cabecera de su columna como atributo, contando desde el final
+  // para que funcione igual en filas con celda de día (rowspan) y sin ella.
+  document.querySelectorAll('table.simple, .micro-table table').forEach(table => {
     const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
     table.querySelectorAll('tbody tr').forEach(tr => {
-      Array.from(tr.children).forEach((td, i) => {
-        if (headers[i]) td.setAttribute('data-label', headers[i]);
+      if (tr.classList.contains('day-sep')) return;
+      const cells = Array.from(tr.children);
+      const offset = headers.length - cells.length;
+      cells.forEach((td, i) => {
+        const label = headers[i + offset];
+        if (label) td.setAttribute('data-label', label);
       });
     });
   });

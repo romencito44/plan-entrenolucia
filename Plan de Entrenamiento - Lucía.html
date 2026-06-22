@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plan de Entrenamiento - Lucía</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1F4E5C">
+<meta name="theme-color" content="#2E1F4D">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,12 +13,14 @@
 <meta name="apple-mobile-web-app-title" content="Plan Lucía">
 <style>
   :root {
-    --teal: #1F4E5C;
-    --teal-dark: #163840;
-    --teal-tint: #E7EEF0;
+    --teal: #2E1F4D;
+    --teal-dark: #1C1330;
+    --teal-tint: #EFE8F9;
     --green: #4F7A3D;
     --cream: #F5EFDC;
     --warm: #B5651D;
+    --accent-1: #7C5CFF;
+    --accent-2: #FF4FA3;
     --text: #1F2937;
     --muted: #6B7280;
     --border: #E5E7EB;
@@ -28,7 +30,7 @@
   * { box-sizing: border-box; }
   body { font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.5; }
 
-  header { padding: 22px 32px; background: #fff; border-bottom: 1px solid var(--border); border-top: 4px solid var(--teal); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  header { padding: 22px 32px; background: #fff; border-bottom: 1px solid var(--border); border-top: 4px solid; border-image: linear-gradient(90deg, var(--accent-1), var(--accent-2)) 1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
   header .brand { display: flex; align-items: center; gap: 14px; }
   header .brand .icon { width: 46px; height: 46px; border-radius: 12px; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
   header h1 { margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.01em; }
@@ -38,8 +40,8 @@
   header a:hover { text-decoration: underline; }
 
   .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .actions button, .actions label.btn { background: var(--teal); color: #fff; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background .15s; }
-  .actions button:hover, .actions label.btn:hover { background: var(--teal-dark); }
+  .actions button, .actions label.btn { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #fff; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: filter .15s; }
+  .actions button:hover, .actions label.btn:hover { filter: brightness(0.9); }
 
   .tab-radio { position: absolute; opacity: 0; pointer-events: none; }
   .tabs { display: flex; gap: 4px; padding: 10px 32px; background: #fff; border-bottom: 1px solid var(--border); overflow-x: auto; }
@@ -58,7 +60,7 @@
   #tab-resumen:checked ~ nav label[for="tab-resumen"],
   #tab-meso1:checked ~ nav label[for="tab-meso1"],
   #tab-meso2:checked ~ nav label[for="tab-meso2"],
-  #tab-cardio:checked ~ nav label[for="tab-cardio"] { color: #fff; background: var(--teal); }
+  #tab-cardio:checked ~ nav label[for="tab-cardio"] { color: #fff; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); }
 
   .card { background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.04); padding: 24px; margin-bottom: 18px; border: 1px solid var(--border); }
   .resumen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
@@ -67,7 +69,7 @@
   .resumen-grid .item.wide span { color: var(--teal); }
 
   .progress-bar { background: var(--border); border-radius: 999px; height: 14px; overflow: hidden; }
-  .progress-fill { background: var(--green); height: 100%; width: 0%; border-radius: 999px; transition: width .3s ease; }
+  .progress-fill { background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); height: 100%; width: 0%; border-radius: 999px; transition: width .3s ease; }
   .progress-text { margin: 10px 0 0; font-size: 0.85rem; color: var(--muted); }
 
   .table-wrap { overflow-x: auto; background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 20px; border: 1px solid var(--border); }
